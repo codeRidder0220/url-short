@@ -12,6 +12,8 @@ const router = express.Router();
 //signup route => 
 router.post("/signup", async(req , res)=>{
 
+    console.log("REQ BODY:", req.body);
+
     //validation check => 
     const validationResult = await signupPostRequestBodySchema.safeParseAsync(req.body);
 
@@ -27,7 +29,7 @@ router.post("/signup", async(req , res)=>{
     if(existingUser) return res.status(400).json({error:`User with this email ${email} already exists`});
 
 
-    const {salt , Password:hashedPassword} = hashedPasswordWithSalt(password); // we made utils where we make reusable thing and import from it to use in our code like => signup , login 
+    const {salt , password:hashedPassword} = hashedPasswordWithSalt(password); // we made utils where we make reusable thing and import from it to use in our code like => signup , login 
 
     const [user] = await db.insert(userTable).values({
         firstname,
