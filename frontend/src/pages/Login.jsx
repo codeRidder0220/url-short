@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
+import {useAuth} from "../context/AuthContext.jsx"
 
 function Login() {
+
+  const {login} = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,17 +47,17 @@ function Login() {
         return;
       }
 
-      const token = data.data.token;
-      localStorage.setItem("token" , token);
-      
 
+      const token = data.data.token;
+      login(token);
+          
       setMessage("Login successful!");
 
       setFormData({
         email: "",
         password: "",
       });
-      navigate("/Dashboard");
+      navigate("/dashboard");
 
     } catch (error) {
       console.log("LOGIN ERROR:", error);
