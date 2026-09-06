@@ -5,6 +5,8 @@ import { signupPostRequestBodySchema , loginPostRequestbodySchema } from "../val
 import {hashedPasswordWithSalt} from "../utils/hash.js"
 import {getUserByEmail} from "../services/user.service.js"
 import {createUserToken} from "../utils/token.js"
+import { eq } from "drizzle-orm";
+import { ensureAuthenticated } from "../middlewares/auth.middleware.js";
 
 
 const router = express.Router();
@@ -73,6 +75,41 @@ router.post("/login" , async(req,res)=>{
 
 
 })
+
+// get current logged-in user =>
+router.get("/me", ensureAuthenticated, async (req, res) => {
+
+    try {
+
+        const [user] = await db
+            .select({
+                firstname: userTable.firstname,
+                lastname: userTable.lastname,
+                email: userTable.email,
+            })
+            .from(userTable)
+            .where(eq(userTable.id, req.user.id));
+
+
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        return res.status(200).json({
+            user
+        });
+
+    } catch (error) {
+
+        console.log("GET USER ERROR:", error);
+
+        return res.status(500).json({
+            error: "Internal server error"
+        });
+    }
+});
 
   
 

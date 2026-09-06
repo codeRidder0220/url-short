@@ -1,5 +1,5 @@
 import Navbar from "../components/Navbar";
-
+import { Link } from "react-router-dom";
 function Home() {
   return (
     <>
@@ -60,9 +60,11 @@ function Home() {
                 className="w-full rounded-lg border bg-white border-gray-600 px-4 py-3 outline-none transition focus:border-slate-900 md:w-44"
               />
 
-              <button className="rounded-lg bg-green-900 px-6 py-3 font-medium text-white transition hover:bg-green-700">
+              <Link 
+              to="/login"
+              className="rounded-lg bg-green-900 px-6 py-3 font-medium text-white transition hover:bg-green-700">
                 Shorten
-              </button>
+              </Link>
             </div>
 
             <p className="mt-3 text-left text-sm text-slate-500">

@@ -11,10 +11,7 @@ function Dashboard() {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        navigate("/login");
-    };
+   
 
     const [url, setUrl] = useState("");
     const [code, setCode] = useState("");
@@ -24,6 +21,53 @@ function Dashboard() {
     const [shortenLoading, setShortenLoading] = useState(false);
     const [shortenError, setShortenError] = useState("");
     const [shortenSuccess, setShortenSuccess] = useState("");
+    const [user, setUser] = useState(null);
+
+
+
+    const handleLogout = () => {
+        logout();
+        console.log("logout clicked");
+        
+        navigate("/");
+    };
+
+
+    //user name =>
+    useEffect(() => {
+
+        const fetchUser = async () => {
+
+            try {
+
+                const { response, data } = await apiRequest(
+                    "/user/me",
+                    {
+                        headers:{
+                            Authorization: `Bearer ${token}`,
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    console.log("USER ERROR:", data);
+                    return;
+                }
+
+                setUser(data.user);
+
+            } catch (error) {
+                console.log("USER FETCH ERROR:", error);
+            }
+        };
+
+        if (token) {
+            fetchUser();
+        }
+
+    }, [token]);
+
+
 
     //fetch all links => 
     useEffect(() => {
@@ -61,6 +105,7 @@ function Dashboard() {
             fetchLinks();
         }
     }, [token])
+
 
     //handle shorten =>
     const handleShorten = async (e) => {
@@ -114,6 +159,7 @@ function Dashboard() {
         }
     }
 
+
     //hablde deletion =>
     const handleDelete = async (id) => {
 
@@ -145,8 +191,6 @@ function Dashboard() {
 
 
 
-
-
     return (
         <main className="min-h-screen bg-green-50">
             {/* Header */}
@@ -174,7 +218,7 @@ function Dashboard() {
                 {/* Welcome */}
                 <section>
                     <h2 className="text-3xl font-bold text-green-900 sm:text-4xl">
-                        Welcome back
+                        Welcome back{user?.firstname ? `, ${user.firstname}` : ""}   
                     </h2>
 
                     <p className="mt-2 text-sm text-slate-800 sm:text-base">
@@ -314,7 +358,7 @@ function Dashboard() {
                                         </p>
 
                                         <p className="mt-1 text-sm font-semibold text-green-800">
-                                            {link.shortCode}
+                                            {link.shortcode}
                                         </p>
                                     </div>
 
@@ -323,7 +367,7 @@ function Dashboard() {
                                             type="button"
                                             onClick={() => {
                                                 navigator.clipboard.writeText(
-                                                    `${import.meta.env.VITE_API_URL}/${link.shortCode}`
+                                                    `${import.meta.env.VITE_API_URL}/${link.shortcode}`
                                                 );
                                             }}
                                             className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
@@ -335,7 +379,7 @@ function Dashboard() {
                                             type="button"
                                             onClick={() => {
                                                 window.open(
-                                                    `${import.meta.env.VITE_API_URL}/${link.shortCode}`,
+                                                    `${import.meta.env.VITE_API_URL}/${link.shortcode}`,
                                                     "_blank"
                                                 );
 
